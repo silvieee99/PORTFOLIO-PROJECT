@@ -1,23 +1,13 @@
-select*
-from OlympicHistory
-select*
-from OlympicRegions
+SELECT sport,COUNT(games) AS NoOfGames 
+FROM spotify
 
---IDENTIFY THE SPORTS THAT WAS PLAYED IN ALL SUMMER OLYMPICS
---1. TOTAL NO OF SUMMER OLYMPIC GAMES PLAYED
---2. FOR EACH SPORT,HOW MANY GAMES WERE PLAYED
---3. COMPARE 1 AND 2
+SELECT track_artist,COUNT(*)
+FROM spotify
+GROUP BY track_artist
 
-select sport,count(games) as NoOfGames from (select distinct(Sport)select*
-from spotify
-
-select track_artist,count(*)
-from spotify
-group by track_artist
-
-select track_artist,track_popularity,track_album_release_date,playlist_name,playlist_genre,playlist_subgenre
-from spotify
-where track_artist = 'ed sheeran'
+SELECT track_artist,track_popularity,track_album_release_date,playlist_name,playlist_genre,playlist_subgenre
+FROM spotify
+WHERE track_artist = 'ed sheeran'
 
 --UPDATING NULL VALUES
 
@@ -25,183 +15,183 @@ where track_artist = 'ed sheeran'
 
 
 --UPDATE TRACK ALBUM RELEASE DATE
-select track_album_release_date, convert(date,track_album_release_date)
-from spotify
+SELECT track_album_release_date, convert(date,track_album_release_date)
+FROM spotify
 
-alter table spotify
-add ReleaseDate date;
+ALTER TABLE spotify
+ADD ReleaseDate date;
 
-update spotify
-set ReleaseDate = convert(date,track_album_release_date)
+UPDATE spotify
+SET ReleaseDate = convert(date,track_album_release_date)
 
-select track_artist,track_popularity,ReleaseDate,playlist_name,playlist_genre,playlist_subgenre
-from spotify
-where ReleaseDate is not null
-order by ReleaseDate 
+SELECT track_artist,track_popularity,ReleaseDate,playlist_name,playlist_genre,playlist_subgenre
+FROM spotify
+WHERE ReleaseDate IS NOT NULL
+ORDER BY ReleaseDate 
 
 --TOTAL SONGS IN EACH PLAYLIST GENRE
-select distinct(playlist_genre),count(playlist_genre)
-from spotify
-group by playlist_genre
+SELECT DISTINCT(playlist_genre),COUNT(playlist_genre)
+FROM spotify
+GROUP BY playlist_genre
 
-select distinct(track_artist),count(track_artist),track_name
-from spotify 
-group by track_artist,track_name
+SELECT DISTINCT(track_artist),COUNT(track_artist),track_name
+FROM spotify 
+GROUP BY track_artist,track_name
 
 --COUNT HOW MANY TIMES A TRACK ARTIST NAME APPEARED
-select track_artist,count(*)
-from spotify
-group by track_artist
+SELECT track_artist,COUNT(*)
+FROM spotify
+GROUP BY track_artist
 
 --BREAKING TRACK_NAME INTO INDIVIDUAL COLUMNS(SongTitle,Track)
-select track_name,substring(track_name,-1,CHARINDEX('-',track_name)) as SongTitle, 
-SUBSTRING(track_name,CHARINDEX('-',track_name)+1,len(track_name)) as Track
-from spotify
+SELECT track_name,substring(track_name,-1,CHARINDEX('-',track_name)) AS SongTitle, 
+SUBSTRING(track_name,CHARINDEX('-',track_name)+1,len(track_name)) AS Track
+FROM spotify
 
-alter table spotify
-add SongTitle nvarchar(255);
+ALTER TABLE spotify
+ADD SongTitle nvarchar(255);
 
-update spotify
-set SongTitle = substring(track_name,-1,CHARINDEX('-',track_name))
+UPDATE spotify
+SET SongTitle = substring(track_name,-1,CHARINDEX('-',track_name))
 
-alter table spotify
-add Track nvarchar(255);
+ALTER TABLE spotify
+ADD Track nvarchar(255);
 
-update spotify
-set Track = SUBSTRING(track_name,CHARINDEX('-',track_name)+1,len(track_name))
+UPDATE spotify
+SET Track = SUBSTRING(track_name,CHARINDEX('-',track_name)+1,len(track_name))
 
-select*
-from spotify
+SELECT*
+FROM spotify
 
 									--OR
 SELECT track_name,PARSENAME(REPLACE(track_name,'-','.'),2),
 PARSENAME(REPLACE(track_name,'-','.'),1)
-from spotify
+FROM spotify
 
-alter table spotify
-add TrackSplit nvarchar(255);
-update spotify
-set TrackSplit = PARSENAME(REPLACE(track_name,'-','.'),2)
+ALTER TABLE spotify
+ADD TrackSplit nvarchar(255);
+UPDATE spotify
+SET TrackSplit = PARSENAME(REPLACE(track_name,'-','.'),2)
 
-alter table spotify
-add TrackSplit2 nvarchar(255);
-update spotify
-set TrackSplit2 = PARSENAME(REPLACE(track_name,'-','.'),1)
+ALTER TABLE spotify
+ADD TrackSplit2 nvarchar(255);
+UPDATE spotify
+SET TrackSplit2 = PARSENAME(REPLACE(track_name,'-','.'),1)
 	
 	--BREAKING PLAYLIST NAME INTO DIFFERENT COLUMNS
 
-select playlist_name, PARSENAME(replace(playlist_name,' ','.'),2),
+SELECT playlist_name, PARSENAME(replace(playlist_name,' ','.'),2),
 PARSENAME(replace(playlist_name,' ','.'),1)
-from spotify
+FROM spotify
 
-alter table spotify
-add PlaylistSplit nvarchar(255);
-update spotify
-set PlaylistSplit = PARSENAME(replace(playlist_name,' ','.'),2)
+ALTER TABLE spotify
+ADD PlaylistSplit nvarchar(255);
+UPDATE spotify
+SET PlaylistSplit = PARSENAME(replace(playlist_name,' ','.'),2)
 
-alter table spotify
-add PlaylistSplit2 nvarchar(255);
-update spotify
-set PlaylistSplit2 = PARSENAME(replace(playlist_name,' ','.'),1)
+ALTER TABLE spotify
+ADD PlaylistSplit2 nvarchar(255);
+UPDATE spotify
+SET PlaylistSplit2 = PARSENAME(replace(playlist_name,' ','.'),1)
 
 
 
-select*
-from spotify
+SELECT*
+FROM spotify
 
 --DELETING COLUMNS
 
-select*
-from spotify
+SELECT*
+FROM spotify
 
-alter table spotify
-drop column track_album_release_date
+ALTER TABLE spotify
+DROP COLUMN track_album_release_date
 
-alter table spotify
-drop column playlistsplit,playlistsplit2
+ALTER TABLE spotify
+DROP COLUMN playlistsplit,playlistsplit2
 
 --HOW MANY UNIQUE PLAYLISTS ARE THERE IN THE DATASET
-select count(distinct playlist_id) as UniquePlaylist
-from spotify
+SELECT COUNT(DISTINCT playlist_id) AS UniquePlaylist
+FROM spotify
 
 --What are the top 5 most popular playlists based on the sum of track popularity?
-select playlist_id ,sum(track_popularity) as TotalPopularity
-from spotify
-group by playlist_id
-order by 2 desc
+SELECT playlist_id ,sum(track_popularity) as TotalPopularity
+FROM spotify
+GROUP BY playlist_id
+ORDER BY 2 DESC
 
 --What is the average popularity of tracks in each playlist genre?
-select playlist_id, playlist_genre,AVG(track_popularity)
-from spotify
-group by playlist_genre,playlist_id
-order by playlist_id
+SELECT playlist_id, playlist_genre,AVG(track_popularity)
+FROM spotify
+GROUP BY playlist_genre,playlist_id
+ORDER BY playlist_id
 
 --How many sub-genres are associated with each main playlist genre?
-select count(distinct playlist_subgenre) as SubGenreCount, playlist_genre
-from spotify
-group by playlist_genre
-order by 2
+SELECT COUNT(DISTINCT playlist_subgenre) AS SubGenreCount, playlist_genre
+FROM spotify
+GROUP BY playlist_genre
+ORDER BY 2
 
 --What are the top 10 most popular tracks in the entire dataset?
-select top 10 track_name, track_popularity
-from spotify
-order by track_popularity desc
+SELECT top 10 track_name, track_popularity
+FROM spotify
+ORDER BY track_popularity DESC
 
 --Which track has the highest popularity?
-select top 1 track_name, track_popularity
-from spotify
-order by track_popularity desc
+SELECT top 1 track_name, track_popularity
+FROM spotify
+ORDER BY track_popularity DESC
 
 									--OR
 
-Select track_name, track_popularity
-from spotify
-where track_popularity = (select max(track_popularity) from spotify)
+SELECT track_name, track_popularity
+FROM spotify
+WHERE track_popularity = (SELECT max(track_popularity) FROM spotify)
 
 --How many unique artists are featured in the dataset?
-select count(distinct track_artist) as UniqueArtist
-from spotify
+SELECT COUNT(DISTINCT track_artist) AS UniqueArtist
+FROM spotify
 
 --What is the average popularity of tracks in a specific playlist?
-select Track,avg(track_popularity), playlist_name
-from spotify
-group by playlist_name,track
-order by 2 desc
+SELECT Track,avg(track_popularity), playlist_name
+FROM spotify
+GROUP BY playlist_name,track
+ORDER BY 2 DESC
 
 --How many tracks belong to a specific sub-genre?
 
-select playlist_subgenre ,count(track_name) 
-from spotify
-group by playlist_subgenre
+SELECT playlist_subgenre ,COUNT(track_name) 
+FROM spotify
+GROUP BY playlist_subgenre
 
 --How many unique albums are included in the dataset?
-select count(distinct track_album_name)
-from spotify
+SELECT COUNT(DISTINCT track_album_name)
+FROM spotify
 
 --What is the average popularity of tracks in each album?
-select track_album_name,avg(track_popularity),track_name
-from spotify
-group by track_name,track_album_name
+SELECT track_album_name,avg(track_popularity),track_name
+FROM spotify
+GROUP BY track_name,track_album_name
 
 --Which album has the highest number of tracks?
-select track_name ,count(distinct track_album_name)
-from spotify
-group by track_name
+SELECT track_name ,COUNT(DISTINCT track_album_name)
+FROM spotify
+GROUP BY track_name
 
 
-;with music as
-(select track_album_name ,count(distinct track_name) as TrackCount
-from spotify
-group by track_album_name)
-select top 5 track_album_name, TrackCount
-from music
-order by TrackCount desc
+;WITH music AS
+(SELECT track_album_name ,COUNT(DISTINCT track_name) AS TrackCount
+FROM spotify
+GROUP BY track_album_name)
+SELECT top 5 track_album_name, TrackCount
+FROM music
+ORDER BY TrackCount DESC
 
 --What are the top 5 most popular albums based on track popularity?
-select track_album_name, track_popularity
-from spotify
-group by track_popularity,track_album_name
-order by track_popularity desc
+SELECT track_album_name, track_popularity
+FROM spotify
+GROUP BY track_popularity,track_album_name
+ORDER BY track_popularity DESC
 
 
 
